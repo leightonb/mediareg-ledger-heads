@@ -27,7 +27,18 @@ You need `bash`, `curl` and `jq`. From a clone of this repository:
 ```
 
 Each line says `ok` if the registry still has the same hash at that position, or `CHANGED`
-if it doesn't.
+if it doesn't. Heads from before a reset say `retired` (see below).
+
+## Resets
+
+Before launch, the registry's ledger may be deliberately restarted on a new database. A
+reset is a line in `heads.jsonl` with the date and the reason, and the heads recorded
+before it stay in the file. They belong to a ledger the registry no longer serves, so they
+can't be checked any more. Checking and recording start again from the new ledger's head.
+
+A reset can't be hidden: it's a dated line in a public history, and anyone who already
+holds a clone can see that one happened and what it says. A ledger that shrinks or
+changes without a reset line still fails the daily check.
 
 Better still, keep your own clone and pull it now and then. The owner of this repository
 could rewrite its history too, but not the copies other people already hold.
