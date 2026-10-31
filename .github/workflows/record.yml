@@ -2,7 +2,8 @@ name: Record ledger head
 
 # Daily: check the last recorded head is unchanged, then record today's.
 # A failure means the registry's history up to that point changed, or the
-# head went backwards; GitHub emails the repo owner.
+# head went backwards; GitHub emails the repo owner. After a reset
+# (./reset.sh), it records nothing until the new ledger has a head.
 on:
   schedule:
     - cron: '0 18 * * *' # 4am Brisbane, after the registry's nightly backup
@@ -31,6 +32,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet heads.jsonl; then echo "Nothing new to commit."; exit 0; fi
           git add heads.jsonl
           git commit -m "Ledger head #$(tail -n 1 heads.jsonl | jq -r .sequence)"
           git push
